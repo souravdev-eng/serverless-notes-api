@@ -29,7 +29,7 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:PutItem
+          - dynamodb:UpdateItem
         Resource: !GetAtt notesTable.Arn
     events:
       - http:
