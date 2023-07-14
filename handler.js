@@ -10,6 +10,9 @@ const send = (statusCode, data) => {
   };
 };
 module.exports.createNote = async (event, context, cb) => {
+  /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
+  `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
+  context.callbackWaitsForEmptyEventLoop = false;
   let data = JSON.parse(event.body);
   try {
     const params = {
@@ -27,8 +30,10 @@ module.exports.createNote = async (event, context, cb) => {
     cb(null, send(500, err.message));
   }
 };
-
 module.exports.updateNote = async (event, context, cb) => {
+  /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
+  `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
+  context.callbackWaitsForEmptyEventLoop = false;
   let notesId = event.pathParameters.id;
   let data = JSON.parse(event.body);
   try {
@@ -52,16 +57,32 @@ module.exports.updateNote = async (event, context, cb) => {
     cb(null, send(500, err.message));
   }
 };
-module.exports.deleteNote = async (event) => {
-  let notesID = event.pathParameters.id;
-  return {
-    statusCode: 200,
-    body: JSON.stringify(`Delete notes with ID ${notesID}`),
-  };
+module.exports.deleteNote = async (event, context, cb) => {
+  /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
+  `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
+  context.callbackWaitsForEmptyEventLoop = false;
+  let notesId = event.pathParameters.id;
+  try {
+    const params = {
+      TableName: NOTES_TABLE_NAME,
+      Key: { notesId },
+      ConditionExpression: 'attribute_exists(notesId)',
+    };
+    await documentClient.delete(params).promise();
+    cb(null, send(200, notesId));
+  } catch (error) {
+    cb(null, send(500, error.message));
+  }
 };
-module.exports.getNotes = async (event) => {
-  return {
-    statusCode: 200,
-    body: JSON.stringify(`Get all notes`),
-  };
+module.exports.getNotes = async (event, context, cb) => {
+  /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
+  `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
+  context.callbackWaitsForEmptyEventLoop = false;
+  try {
+    const params = { TableName: NOTES_TABLE_NAME };
+    const notes = await documentClient.scan(params).promise();
+    cb(null, send(200, notes));
+  } catch (error) {
+    cb(null, send(500, error.message));
+  }
 };

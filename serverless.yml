@@ -39,12 +39,24 @@ functions:
     handler: handler.deleteNote
     environment:
       NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: delete
           path: notes/{id}
   getAllNote:
     handler: handler.getNotes
+    environment:
+      NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: !GetAtt notesTable.Arn
     events:
       - http:
           method: get
