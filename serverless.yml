@@ -13,6 +13,7 @@ functions:
     handler: handler.createNote
     environment:
       NOTES_TABLE_NAME: !Ref notesTable
+      AWS_NODEJS_CONNECTION_RULES_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -26,6 +27,7 @@ functions:
     handler: handler.updateNote
     environment:
       NOTES_TABLE_NAME: !Ref notesTable
+      AWS_NODEJS_CONNECTION_RULES_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -39,6 +41,7 @@ functions:
     handler: handler.deleteNote
     environment:
       NOTES_TABLE_NAME: !Ref notesTable
+      AWS_NODEJS_CONNECTION_RULES_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -52,6 +55,7 @@ functions:
     handler: handler.getNotes
     environment:
       NOTES_TABLE_NAME: !Ref notesTable
+      AWS_NODEJS_CONNECTION_RULES_ENABLED: 1
     iamRoleStatements:
       - Effect: Allow
         Action:
