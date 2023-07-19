@@ -1,3 +1,10 @@
+const { CognitoJwtVerifier } = require('aws-jwt-verify');
+const jwtVerifier = CognitoJwtVerifier.create({
+  userPoolId: 'ap-south-1_2yNePzxdW',
+  tokenUse: 'id',
+  clientId: '5nuogvmp6lk26t06ss1s9h6d4n',
+});
+
 /**
  * The function generates an authorization policy with a principal ID, effect, and resource.
  * @param principalId - The principalId parameter represents the identifier of the user or entity
@@ -31,17 +38,16 @@ const generatePolicy = (principalId, effect, resource) => {
   return authResponse;
 };
 
-exports.handler = (event, context, cb) => {
+exports.handler = async (event, context, cb) => {
   const token = event.authorizationToken; // "allow" or "deny"
 
-  switch (token) {
-    case 'allow':
-      cb(null, generatePolicy('user', 'Allow', event.methodArn));
-      break;
-    case 'deny':
-      cb(null, generatePolicy('user', 'Deny', event.methodArn));
-      break;
-    default:
-      cb('Error: Invalid token');
+  // Validate the token
+  console.log(token);
+  try {
+    const payload = await jwtVerifier.verify(token);
+    console.log(JSON.stringify(payload));
+    cb(null, generatePolicy('user', 'Allow', event.methodArn));
+  } catch (error) {
+    cb('Error: Invalid token');
   }
 };
