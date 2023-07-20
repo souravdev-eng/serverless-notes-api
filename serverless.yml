@@ -79,6 +79,7 @@ functions:
           path: notes
           authorizer:
             name: userpool_authorizer
+            type: COGNITO_USER_POOLS
             arn: !GetAtt cognitoUserPool.Arn
 
 plugins:

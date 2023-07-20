@@ -10,6 +10,7 @@ notesTable:
     KeySchema:
       - AttributeName: notesId
         KeyType: HASH
+
 # Cognito User Pool
 cognitoUserPool:
   Type: AWS::Cognito::UserPool
@@ -22,9 +23,30 @@ cognitoUserWebClient:
   Properties:
     UserPoolId: !Ref cognitoUserPool
     ClientName: web
+    AllowedOAuthFlowsUserPoolClient: true
+    SupportedIdentityProviders:
+      - COGNITO
+    AllowedOAuthScopes:
+      - phone
+      - email
+      - openid
+      - profile
+    AllowedOAuthFlows:
+      - implicit
+    CallbackURLs:
+      - http://localhost:3000
+
 # User Pool Domain
 cognitoUserDomain:
   Type: AWS::Cognito::UserPoolDomain
   Properties:
     UserPoolId: !Ref cognitoUserPool
     Domain: mynotescddemos
+
+# Application parameters
+userPoolIdParams:
+  Type: AWS::SSM::Parameter
+  Properties:
+    Name: /notes/dev/userPoolId
+    Type: String
+    Value: !GetAtt cognitoUserPool.Arn
