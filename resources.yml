@@ -2,7 +2,7 @@
 notesTable:
   Type: AWS::DynamoDB::Table
   Properties:
-    TableName: notes
+    TableName: notes-${self:provider.stage}
     BillingMode: PAY_PER_REQUEST
     AttributeDefinitions:
       - AttributeName: notesId
@@ -15,7 +15,7 @@ notesTable:
 cognitoUserPool:
   Type: AWS::Cognito::UserPool
   Properties:
-    UserPoolName: NotesUserPool
+    UserPoolName: NotesUserPool-${self:provider.stage}
 
 # Cognito User Pool Client
 cognitoUserWebClient:
@@ -41,12 +41,12 @@ cognitoUserDomain:
   Type: AWS::Cognito::UserPoolDomain
   Properties:
     UserPoolId: !Ref cognitoUserPool
-    Domain: mynotescddemos
+    Domain: mynotescddemos-${self:provider.stage}
 
 # Application parameters
-userPoolIdParams:
+userPoolArnParams:
   Type: AWS::SSM::Parameter
   Properties:
-    Name: /notes/dev/userPoolId
+    Name: /notes/${self:provider.stage}/userPoolArn
     Type: String
     Value: !GetAtt cognitoUserPool.Arn
