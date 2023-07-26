@@ -1,7 +1,7 @@
 'use strict';
-const DynamoDB = require('aws-sdk/clients/dynamodb');
-/* The line `const documentClient = new DynamoDB.DocumentClient({ ... })` is creating a new instance of
-the `DocumentClient` class from the AWS SDK for DynamoDB. */
+import { DynamoDB } from 'aws-sdk';
+import { APIGatewayEvent, Context, APIGatewayProxyCallback } from 'aws-lambda';
+
 const documentClient = new DynamoDB.DocumentClient({
   region: 'ap-south-1',
   maxRetries: 3,
@@ -9,19 +9,19 @@ const documentClient = new DynamoDB.DocumentClient({
     timeout: 5000,
   },
 });
-const NOTES_TABLE_NAME = process.env.NOTES_TABLE_NAME;
+const NOTES_TABLE_NAME = process.env.NOTES_TABLE_NAME!;
 
-const send = (statusCode, data) => {
+const send = (statusCode: number, data: any) => {
   return {
     statusCode,
     body: JSON.stringify(data),
   };
 };
-module.exports.createNote = async (event, context, cb) => {
+export const createNote = async (event: APIGatewayEvent, context: Context, cb: APIGatewayProxyCallback) => {
   /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
   `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
   context.callbackWaitsForEmptyEventLoop = false;
-  let data = JSON.parse(event.body);
+  let data = JSON.parse(event.body!);
   try {
     const params = {
       TableName: NOTES_TABLE_NAME,
@@ -38,12 +38,12 @@ module.exports.createNote = async (event, context, cb) => {
     cb(null, send(500, err.message));
   }
 };
-module.exports.updateNote = async (event, context, cb) => {
+export const updateNote = async (event: APIGatewayEvent, context: Context, cb: APIGatewayProxyCallback) => {
   /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
   `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
   context.callbackWaitsForEmptyEventLoop = false;
-  let notesId = event.pathParameters.id;
-  let data = JSON.parse(event.body);
+  let notesId = event.pathParameters?.id;
+  let data = JSON.parse(event.body!);
   try {
     const params = {
       TableName: NOTES_TABLE_NAME,
@@ -65,11 +65,11 @@ module.exports.updateNote = async (event, context, cb) => {
     cb(null, send(500, err.message));
   }
 };
-module.exports.deleteNote = async (event, context, cb) => {
+export const deleteNote = async (event: APIGatewayEvent, context: Context, cb: APIGatewayProxyCallback) => {
   /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
   `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
   context.callbackWaitsForEmptyEventLoop = false;
-  let notesId = event.pathParameters.id;
+  let notesId = event.pathParameters?.id;
   try {
     const params = {
       TableName: NOTES_TABLE_NAME,
@@ -82,7 +82,7 @@ module.exports.deleteNote = async (event, context, cb) => {
     cb(null, send(500, error.message));
   }
 };
-module.exports.getNotes = async (event, context, cb) => {
+export const getNotes = async (event: APIGatewayEvent, context: Context, cb: APIGatewayProxyCallback) => {
   /* The line `context.callbackWaitsForEmptyEventLoop = false;` is setting the
   `callbackWaitsForEmptyEventLoop` property of the `context` object to `false`. */
   context.callbackWaitsForEmptyEventLoop = false;

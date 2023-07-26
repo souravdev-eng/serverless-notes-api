@@ -1,6 +1,8 @@
-const { CognitoJwtVerifier } = require('aws-jwt-verify');
-const COGNITO_USERPOOL_ID = process.env.COGNITO_USERPOOL_ID;
-const COGNITO_WEB_CLIENT_ID = process.env.COGNITO_WEB_CLIENT_ID;
+import { APIGatewayTokenAuthorizerEvent, Context, AuthResponse } from 'aws-lambda';
+import { CognitoJwtVerifier } from 'aws-jwt-verify';
+
+const COGNITO_USERPOOL_ID = process.env.COGNITO_USERPOOL_ID!;
+const COGNITO_WEB_CLIENT_ID = process.env.COGNITO_WEB_CLIENT_ID!;
 
 const jwtVerifier = CognitoJwtVerifier.create({
   userPoolId: COGNITO_USERPOOL_ID,
@@ -20,9 +22,10 @@ const jwtVerifier = CognitoJwtVerifier.create({
  * specific API endpoint or resource that the policy grants access to.
  * @returns The function `generatePolicy` returns an object with the following properties:
  */
-const generatePolicy = (principalId, effect, resource) => {
-  const authResponse = {};
+const generatePolicy = (principalId, effect, resource): AuthResponse => {
+  const authResponse = {} as AuthResponse;
   authResponse.principalId = principalId;
+
   if (effect && resource) {
     let policyDocument = {
       Version: '2012-10-17',
@@ -41,11 +44,10 @@ const generatePolicy = (principalId, effect, resource) => {
   return authResponse;
 };
 
-exports.handler = async (event, context, cb) => {
+
+export const handler = async (event: APIGatewayTokenAuthorizerEvent, context: Context, cb: any) => {
   const token = event.authorizationToken; // "allow" or "deny"
 
-  // Validate the token
-  console.log(token);
   try {
     const payload = await jwtVerifier.verify(token);
     console.log(JSON.stringify(payload));
