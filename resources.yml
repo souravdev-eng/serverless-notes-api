@@ -98,8 +98,8 @@ cloudFrontDistribution:
           DomainName: !Join
             - '.'
             - - !Ref ApiGatewayRestApi
-                - "execute-api"
-                - ${aws:region}
-                - "amazonaws.com"
-      CustomOriginConfig:
-        OriginProtocolPolicy: https-only
+              - 'execute-api'
+              - ${aws:region}
+              - 'amazonaws.com'
+          CustomOriginConfig:
+            OriginProtocolPolicy: https-only
